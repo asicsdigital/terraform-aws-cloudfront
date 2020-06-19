@@ -74,6 +74,7 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
 
     forwarded_values {
       query_string = var.default_cache_behavior["query_string"]
+      headers      = var.default_cache_behavior["headers"]
 
       cookies {
         forward = var.default_cache_behavior["forward"]
