@@ -10,6 +10,11 @@ variable "environment" {
   default = ""
 }
 
+variable "enable_cloudfront" {
+  description = "Create a cloudfront?"
+  default = true
+}
+
 variable "enable" {
   default = true
 }
