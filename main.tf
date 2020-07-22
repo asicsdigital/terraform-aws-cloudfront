@@ -1,7 +1,5 @@
 
 resource "aws_cloudfront_distribution" "cf_distribution" {
-  count = var.enable_cloudfront ? 1 : 0
-
   enabled             = var.enable
   is_ipv6_enabled     = var.is_ipv6_enabled
   comment             = var.comment
