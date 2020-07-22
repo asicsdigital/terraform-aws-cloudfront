@@ -114,7 +114,7 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       target_origin_id = ordered_cache_behavior.value.target_origin_id
 
       dynamic "lambda_function_association" {
-        for_each = [for i in var.ordered_cache_behavior_lambda_association] : {
+        for_each = [for i in var.ordered_cache_behavior_lambda_association : {
           event_type   = i.event_type
           lambda_arn   = i.lambda_arn
           include_body = i.include_body
