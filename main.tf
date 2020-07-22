@@ -131,6 +131,55 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
     }
   }
 
+  dynamic "ordered_cache_behavior" {
+
+    for_each = [for s in var.ordered_cache_behavior_variables_with_lambda : {
+      path_pattern           = s.path_pattern
+      allowed_methods        = s.allowed_methods
+      cached_methods         = s.cached_methods
+      target_origin_id       = s.target_origin_id
+      viewer_protocol_policy = s.viewer_protocol_policy
+      query_string           = s.query_string
+      headers                = s.headers
+      forward                = s.forward
+      min_ttl                = s.min_ttl
+      default_ttl            = s.default_ttl
+      max_ttl                = s.max_ttl
+      compress               = s.compress
+      event_type             = s.event_type
+      lambda_arn             = s.lambda_arn
+      include_body           = s.include_body
+    }]
+
+    content {
+      path_pattern     = ordered_cache_behavior.value.path_pattern
+      allowed_methods  = ordered_cache_behavior.value.allowed_methods
+      cached_methods   = ordered_cache_behavior.value.cached_methods
+      target_origin_id = ordered_cache_behavior.value.target_origin_id
+
+      lambda_function_association {
+        event_type   = ordered_cache_behavior.value.event_type
+        lambda_arn   = ordered_cache_behavior.value.lambda_arn
+        include_body = ordered_cache_behavior.value.include_body
+      }
+
+      forwarded_values {
+        query_string = ordered_cache_behavior.value.query_string
+        headers      = ordered_cache_behavior.value.headers
+
+        cookies {
+          forward = ordered_cache_behavior.value.forward
+        }
+      }
+
+      min_ttl                = ordered_cache_behavior.value.min_ttl
+      default_ttl            = ordered_cache_behavior.value.default_ttl
+      max_ttl                = ordered_cache_behavior.value.max_ttl
+      compress               = ordered_cache_behavior.value.compress
+      viewer_protocol_policy = ordered_cache_behavior.value.viewer_protocol_policy
+    }
+  }
+
   price_class = var.price_class
 
   restrictions {
