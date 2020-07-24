@@ -126,7 +126,7 @@ variable "ordered_cache_behavior_variables" {
       query_string = false
       headers      = ["Origin"]
       forward      = "none"
-
+      lambda_association = []
     },
     {
       path_pattern           = "/content/test2/*"
@@ -142,13 +142,9 @@ variable "ordered_cache_behavior_variables" {
       query_string = false
       headers      = ["Origin"]
       forward      = "none"
-
+      lambda_association = []
     },
   ]
-}
-
-variable "ordered_cache_behavior_lambda_association" {
-  default = []
 }
 
 variable "waf_web_acl_id" {
