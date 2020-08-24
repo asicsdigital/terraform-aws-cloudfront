@@ -71,6 +71,20 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
     cached_methods   = var.default_cache_behavior["cached_methods"]
     target_origin_id = var.default_cache_behavior["target_origin_id"]
 
+    dynamic "lambda_function_association" {
+      for_each = [for i in var.default_cache_behavior["lambda_association"] : {
+        event_type   = i.event_type
+        lambda_arn   = i.lambda_arn
+        include_body = i.include_body
+      }]
+
+      content {
+        event_type   = lambda_function_association.value.event_type
+        lambda_arn   = lambda_function_association.value.lambda_arn
+        include_body = lambda_function_association.value.include_body
+      }
+    }
+
     forwarded_values {
       query_string = var.default_cache_behavior["query_string"]
       headers      = var.default_cache_behavior["headers"]

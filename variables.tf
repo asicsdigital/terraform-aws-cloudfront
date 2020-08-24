@@ -107,6 +107,7 @@ variable "default_cache_behavior" {
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
+    lambda_association     = []
   }
 }
 
