@@ -12,14 +12,25 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       domain_name            = o.domain_name
       origin_id              = o.origin_id
       origin_path            = o.origin_path
-      custom_header          = o.custom_header
+      custom_headers         = o.custom_headers
       origin_access_identity = o.origin_access_identity
     }]
     content {
-      domain_name   = origin.value.domain_name
-      origin_id     = origin.value.origin_id
-      origin_path   = origin.value.origin_path
-      custom_header = origin.value.custom_header
+      domain_name = origin.value.domain_name
+      origin_id   = origin.value.origin_id
+      origin_path = origin.value.origin_path
+
+      dynamic "custom_header" {
+        for_each = [for h in origin.value.custom_headers : {
+          name  = h.name
+          value = h.value
+        }]
+
+        content {
+          name  = custom_header.value.name
+          value = custom_header.value.value
+        }
+      }
 
       s3_origin_config {
         origin_access_identity = origin.value.origin_access_identity
@@ -32,7 +43,7 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       domain_name              = o.domain_name
       origin_id                = o.origin_id
       origin_path              = o.origin_path
-      custom_header            = o.custom_header
+      custom_headers           = o.custom_headers
       http_port                = o.http_port
       https_port               = o.https_port
       origin_keepalive_timeout = o.origin_keepalive_timeout
@@ -42,10 +53,22 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
 
     }]
     content {
-      domain_name   = origin.value.domain_name
-      origin_id     = origin.value.origin_id
-      origin_path   = origin.value.origin_path
-      custom_header = o.custom_header
+      domain_name = origin.value.domain_name
+      origin_id   = origin.value.origin_id
+      origin_path = origin.value.origin_path
+
+      dynamic "custom_header" {
+        for_each = [for h in origin.value.custom_headers : {
+          name  = h.name
+          value = h.value
+        }]
+
+        content {
+          name  = custom_header.value.name
+          value = custom_header.value.value
+        }
+      }
+
       custom_origin_config {
         http_port                = origin.value.http_port
         https_port               = origin.value.https_port

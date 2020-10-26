@@ -84,7 +84,7 @@ variable "custom_origin_configs" {
     domain_name              = ""
     origin_id                = ""
     origin_path              = "/"
-    custom_header            = []
+    custom_headers           = []
     http_port                = "80"
     https_port               = "443"
     origin_keepalive_timeout = 5
