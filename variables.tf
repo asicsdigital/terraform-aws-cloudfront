@@ -72,7 +72,7 @@ variable "logging_config" {
 
 variable "s3_origin_configs" {
 
-  type        = list(map)
+  type        = list
   description = "Define values for origin or multiple origins"
   default     = []
 }
