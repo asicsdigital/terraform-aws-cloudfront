@@ -84,6 +84,7 @@ variable "custom_origin_configs" {
     domain_name              = ""
     origin_id                = ""
     origin_path              = "/"
+    custom_header            = []
     http_port                = "80"
     https_port               = "443"
     origin_keepalive_timeout = 5
@@ -124,9 +125,9 @@ variable "ordered_cache_behavior_variables" {
       compress               = true
       viewer_protocol_policy = "redirect-to-https"
       #forwarded_values
-      query_string = false
-      headers      = ["Origin"]
-      forward      = "none"
+      query_string       = false
+      headers            = ["Origin"]
+      forward            = "none"
       lambda_association = []
     },
     {
@@ -140,9 +141,9 @@ variable "ordered_cache_behavior_variables" {
       compress               = true
       viewer_protocol_policy = "redirect-to-https"
       #forwarded_values
-      query_string = false
-      headers      = ["Origin"]
-      forward      = "none"
+      query_string       = false
+      headers            = ["Origin"]
+      forward            = "none"
       lambda_association = []
     },
   ]

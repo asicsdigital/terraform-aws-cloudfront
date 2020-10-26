@@ -12,13 +12,14 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       domain_name            = o.domain_name
       origin_id              = o.origin_id
       origin_path            = o.origin_path
+      custom_header          = o.custom_header
       origin_access_identity = o.origin_access_identity
-
     }]
     content {
-      domain_name = origin.value.domain_name
-      origin_id   = origin.value.origin_id
-      origin_path = origin.value.origin_path
+      domain_name   = origin.value.domain_name
+      origin_id     = origin.value.origin_id
+      origin_path   = origin.value.origin_path
+      custom_header = origin.value.custom_header
 
       s3_origin_config {
         origin_access_identity = origin.value.origin_access_identity
@@ -31,6 +32,7 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       domain_name              = o.domain_name
       origin_id                = o.origin_id
       origin_path              = o.origin_path
+      custom_header            = o.custom_header
       http_port                = o.http_port
       https_port               = o.https_port
       origin_keepalive_timeout = o.origin_keepalive_timeout
@@ -40,9 +42,10 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
 
     }]
     content {
-      domain_name = origin.value.domain_name
-      origin_id   = origin.value.origin_id
-      origin_path = origin.value.origin_path
+      domain_name   = origin.value.domain_name
+      origin_id     = origin.value.origin_id
+      origin_path   = origin.value.origin_path
+      custom_header = o.custom_header
       custom_origin_config {
         http_port                = origin.value.http_port
         https_port               = origin.value.https_port
