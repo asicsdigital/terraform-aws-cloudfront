@@ -1,7 +1,5 @@
 
 resource "aws_cloudfront_distribution" "cf_distribution" {
-  count = var.enable_cloudfront ? 1 : 0
-
   enabled             = var.enable
   is_ipv6_enabled     = var.is_ipv6_enabled
   comment             = var.comment
@@ -14,13 +12,25 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       domain_name            = o.domain_name
       origin_id              = o.origin_id
       origin_path            = o.origin_path
+      custom_headers         = o.custom_headers
       origin_access_identity = o.origin_access_identity
-
     }]
     content {
       domain_name = origin.value.domain_name
       origin_id   = origin.value.origin_id
       origin_path = origin.value.origin_path
+
+      dynamic "custom_header" {
+        for_each = [for h in origin.value.custom_headers : {
+          name  = h.name
+          value = h.value
+        }]
+
+        content {
+          name  = custom_header.value.name
+          value = custom_header.value.value
+        }
+      }
 
       s3_origin_config {
         origin_access_identity = origin.value.origin_access_identity
@@ -33,6 +43,7 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       domain_name              = o.domain_name
       origin_id                = o.origin_id
       origin_path              = o.origin_path
+      custom_headers           = o.custom_headers
       http_port                = o.http_port
       https_port               = o.https_port
       origin_keepalive_timeout = o.origin_keepalive_timeout
@@ -45,6 +56,19 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       domain_name = origin.value.domain_name
       origin_id   = origin.value.origin_id
       origin_path = origin.value.origin_path
+
+      dynamic "custom_header" {
+        for_each = [for h in origin.value.custom_headers : {
+          name  = h.name
+          value = h.value
+        }]
+
+        content {
+          name  = custom_header.value.name
+          value = custom_header.value.value
+        }
+      }
+
       custom_origin_config {
         http_port                = origin.value.http_port
         https_port               = origin.value.https_port
@@ -72,6 +96,20 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
     allowed_methods  = var.default_cache_behavior["allowed_methods"]
     cached_methods   = var.default_cache_behavior["cached_methods"]
     target_origin_id = var.default_cache_behavior["target_origin_id"]
+
+    dynamic "lambda_function_association" {
+      for_each = [for i in var.default_cache_behavior["lambda_association"] : {
+        event_type   = i.event_type
+        lambda_arn   = i.lambda_arn
+        include_body = i.include_body
+      }]
+
+      content {
+        event_type   = lambda_function_association.value.event_type
+        lambda_arn   = lambda_function_association.value.lambda_arn
+        include_body = lambda_function_association.value.include_body
+      }
+    }
 
     forwarded_values {
       query_string = var.default_cache_behavior["query_string"]
@@ -104,7 +142,7 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       default_ttl            = s.default_ttl
       max_ttl                = s.max_ttl
       compress               = s.compress
-
+      lambda_association     = s.lambda_association
     }]
 
     content {
@@ -112,6 +150,20 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       allowed_methods  = ordered_cache_behavior.value.allowed_methods
       cached_methods   = ordered_cache_behavior.value.cached_methods
       target_origin_id = ordered_cache_behavior.value.target_origin_id
+
+      dynamic "lambda_function_association" {
+        for_each = [for i in ordered_cache_behavior.value.lambda_association : {
+          event_type   = i.event_type
+          lambda_arn   = i.lambda_arn
+          include_body = i.include_body
+        }]
+
+        content {
+          event_type   = lambda_function_association.value.event_type
+          lambda_arn   = lambda_function_association.value.lambda_arn
+          include_body = lambda_function_association.value.include_body
+        }
+      }
 
       forwarded_values {
         query_string = ordered_cache_behavior.value.query_string

@@ -10,11 +10,6 @@ variable "environment" {
   default = ""
 }
 
-variable "enable_cloudfront" {
-  description = "Create a cloudfront?"
-  default = true
-}
-
 variable "enable" {
   default = true
 }
@@ -77,7 +72,7 @@ variable "logging_config" {
 
 variable "s3_origin_configs" {
 
-  type        = list(map(string))
+  type        = list
   description = "Define values for origin or multiple origins"
   default     = []
 }
@@ -89,6 +84,7 @@ variable "custom_origin_configs" {
     domain_name              = ""
     origin_id                = ""
     origin_path              = "/"
+    custom_headers           = []
     http_port                = "80"
     https_port               = "443"
     origin_keepalive_timeout = 5
@@ -112,6 +108,7 @@ variable "default_cache_behavior" {
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
+    lambda_association     = []
   }
 }
 
@@ -128,10 +125,10 @@ variable "ordered_cache_behavior_variables" {
       compress               = true
       viewer_protocol_policy = "redirect-to-https"
       #forwarded_values
-      query_string = false
-      headers      = ["Origin"]
-      forward      = "none"
-
+      query_string       = false
+      headers            = ["Origin"]
+      forward            = "none"
+      lambda_association = []
     },
     {
       path_pattern           = "/content/test2/*"
@@ -144,10 +141,10 @@ variable "ordered_cache_behavior_variables" {
       compress               = true
       viewer_protocol_policy = "redirect-to-https"
       #forwarded_values
-      query_string = false
-      headers      = ["Origin"]
-      forward      = "none"
-
+      query_string       = false
+      headers            = ["Origin"]
+      forward            = "none"
+      lambda_association = []
     },
   ]
 }
