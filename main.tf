@@ -8,23 +8,22 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
   ## Origin's
   # S3 block
   dynamic "origin" {
-    for_each = [for o in var.s3_origin_configs : {
+    for_each = [for o in var.s3_origin_configs : merge({
       domain_name            = o.domain_name
       origin_id              = o.origin_id
       origin_path            = o.origin_path
-      custom_headers         = o.custom_headers
       origin_access_identity = o.origin_access_identity
-    }]
+    }, try({custom_headers         = o.custom_headers}, {}))]
     content {
       domain_name = origin.value.domain_name
       origin_id   = origin.value.origin_id
       origin_path = origin.value.origin_path
 
       dynamic "custom_header" {
-        for_each = [for h in origin.value.custom_headers : {
+        for_each = try([for h in origin.value.custom_headers : {
           name  = h.name
           value = h.value
-        }]
+        }], [])
 
         content {
           name  = custom_header.value.name
@@ -98,11 +97,11 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
     target_origin_id = var.default_cache_behavior["target_origin_id"]
 
     dynamic "lambda_function_association" {
-      for_each = [for i in var.default_cache_behavior["lambda_association"] : {
+      for_each = try([for i in var.default_cache_behavior["lambda_association"] : {
         event_type   = i.event_type
         lambda_arn   = i.lambda_arn
         include_body = i.include_body
-      }]
+      }], [])
 
       content {
         event_type   = lambda_function_association.value.event_type
