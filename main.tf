@@ -13,7 +13,7 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
       origin_id              = o.origin_id
       origin_path            = o.origin_path
       origin_access_identity = o.origin_access_identity
-    }, try({custom_headers         = o.custom_headers}, {}))]
+    }, try({ custom_headers = o.custom_headers }, {}))]
     content {
       domain_name = origin.value.domain_name
       origin_id   = origin.value.origin_id
@@ -205,4 +205,8 @@ resource "aws_cloudfront_distribution" "cf_distribution" {
   web_acl_id = var.waf_web_acl_id
 
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [default_cache_behavior[0].lambda_function_association, web_acl_id]
+  }
 }
